@@ -258,10 +258,10 @@ async def support(interaction: discord.Interaction):
         description=(
             "Step into the shadows of **Knockturn Alley**... 🕯️\n\n"
             "Choose a panel below to open a **ticket**. Our staff will assist you shortly.\n\n"
-            "» **Event Claim** – Event & giveaway help\n"
-            "» **Inquiries** – General questions about *The Alley*\n"
-            "» **Player Reports** – Report mischief, duels, or shady activity\n"
-            "» **Lost Relics** – Recover vanished or broken items\n"
+            "» **Event Claim** – Claim your prize\n"
+            "» **Ask Us** – General questions about *The Alley SMP*\n"
+            "» **Player Reports** – Report players, duels, or suspicious activities\n"
+            "» **Lost Items** – Recover vanished or broken items\n"
             "*The Alley Management* 🕯️"
         ),
         color=0x8e44ad
