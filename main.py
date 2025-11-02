@@ -220,11 +220,10 @@ CRATES = {
 class SupportView(View):
     def __init__(self):
         super().__init__(timeout=None)
-        self.add_item(Button(label="🔮 Inquiries", style=discord.ButtonStyle.success, custom_id="ticket_inquiries"))
-        self.add_item(Button(label="⚔️ Report Mischief", style=discord.ButtonStyle.danger, custom_id="ticket_report"))
-        self.add_item(Button(label="🪄 Lost Relics", style=discord.ButtonStyle.secondary, custom_id="ticket_items"))
-        self.add_item(Button(label="🎭 Dark Gatherings", style=discord.ButtonStyle.primary, custom_id="ticket_events"))
-        self.add_item(Button(label="🏷️ Title Transfer", style=discord.ButtonStyle.secondary, custom_id="ticket_transfer"))
+        self.add_item(Button(label="🔮 Ask Us", style=discord.ButtonStyle.success, custom_id="ticket_inquiries"))
+        self.add_item(Button(label="⚔️ Player Report", style=discord.ButtonStyle.danger, custom_id="ticket_report"))
+        self.add_item(Button(label="🪄 Lost Items", style=discord.ButtonStyle.secondary, custom_id="ticket_items"))
+        self.add_item(Button(label="🎭 Event Claim", style=discord.ButtonStyle.primary, custom_id="ticket_events"))
 
 # Ticket management buttons (claim/close) shown in each ticket
 class TicketManageView(View):
@@ -263,7 +262,6 @@ async def support(interaction: discord.Interaction):
             "» **Inquiries** – General questions about *The Alley*\n"
             "» **Player Reports** – Report mischief, duels, or shady activity\n"
             "» **Lost Relics** – Recover vanished or broken items\n"
-            "» **Title Transfer** – Transfer titles, ranks, or roles\n\n"
             "*The Alley Management* 🕯️"
         ),
         color=0x8e44ad
