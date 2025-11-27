@@ -579,7 +579,7 @@ class ModerationView(View):
         self.add_item(Button(label="⬆️ Promoted", style=discord.ButtonStyle.success, custom_id="mod_promoted"))
         self.add_item(Button(label="⬇️ Demoted", style=discord.ButtonStyle.secondary, custom_id="mod_demoted"))
 
-@bot.tree.command(name="moderation", description="Show The Alley Moderation Panel")
+@bot.tree.command(name="mod", description="Show The Alley Moderation Panel")
 @app_commands.checks.has_permissions(manage_messages=True)
 async def moderation(interaction: discord.Interaction):
     embed = discord.Embed(
