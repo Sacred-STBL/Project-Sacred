@@ -236,7 +236,7 @@ class TicketManageView(View):
 class CrateButtons(View):
     def __init__(self):
         super().__init__(timeout=None)  # persistent view
-        
+
         # Add buttons dynamically from CRATES
         for crate_id, crate in CRATES.items():
             self.add_item(
@@ -438,15 +438,71 @@ async def on_interaction(interaction: discord.Interaction):
         # ===== CRATE SELECTION =====
         elif cid in CRATES:
             crate = CRATES[cid]
-            
+
             embed = discord.Embed(
                 title=crate["title"],
                 description=crate["description"],
                 color=discord.Color.pink()
             )
             embed.set_image(url=crate["image"])
-            
+
             await interaction.response.send_message(embed=embed, ephemeral=True)
+
+        # ===== MODERATION TICKET CREATION =====
+        elif cid.startswith("mod_"):
+            staff_role = guild.get_role(STAFF_ROLE_ID)
+            if staff_role not in interaction.user.roles:
+                await interaction.response.send_message(
+                    "❌ Only staff members can create moderation tickets!", ephemeral=True
+                )
+                return
+
+            for channel in category.channels:
+                if channel.name.startswith("mod_") and channel.name.endswith(str(interaction.user.id)):
+                    await interaction.response.send_message(
+                        "❗ You already have an open moderation ticket!", ephemeral=True
+                    )
+                    return
+
+            mod_channel = await guild.create_text_channel(
+                name=f"{cid}-{interaction.user.id}",
+                category=category,
+                overwrites={
+                    guild.default_role: discord.PermissionOverwrite(view_channel=False),
+                    interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True),
+                    guild.get_role(STAFF_ROLE_ID): discord.PermissionOverwrite(view_channel=True, send_messages=True)
+                }
+            )
+
+            action_names = {
+                "mod_warning": "⚠️ Warning",
+                "mod_tempban": "⏱️ Temp Ban",
+                "mod_permaban": "🔨 Perma Ban",
+                "mod_promoted": "⬆️ Promoted",
+                "mod_demoted": "⬇️ Demoted"
+            }
+            action_name = action_names.get(cid, "Moderation Action")
+
+            mod_embed = discord.Embed(
+                title=f"⚖️ {action_name} - Moderation Ticket",
+                description=(
+                    f"**Staff Member:** {interaction.user.mention}\n"
+                    f"**Action Type:** {action_name}\n\n"
+                    "Please provide the following information:\n"
+                    "1. **Target Member:** Who is this action for?\n"
+                    "2. **Reason:** Why is this action being taken?\n"
+                    "3. **Evidence:** Any screenshots or proof (if applicable)\n"
+                    "4. **Duration:** (For Temp Ban only)\n\n"
+                    "*The Alley Management* 🕯️"
+                ),
+                color=0xe74c3c
+            )
+            mod_embed.set_footer(text="Staff Moderation Log | The Alley Management 🕯️")
+
+            await mod_channel.send(embed=mod_embed, view=TicketManageView())
+            await interaction.response.send_message(
+                f"✅ Moderation ticket created: {mod_channel.mention}", ephemeral=True
+            )
 
 # ==============================
 # 🛒 SHOP PANEL SYSTEM
@@ -485,8 +541,8 @@ async def shop(interaction: discord.Interaction):
 class ApplicationView(View):
     def __init__(self):
         super().__init__(timeout=None)
-        
-        
+
+
         self.add_item(Button(label="🏗️ Builder", style=discord.ButtonStyle.success, custom_id="apply_builder"))
         self.add_item(Button(label="💻 Dev", style=discord.ButtonStyle.secondary, custom_id="apply_dev"))
         self.add_item(Button(label="🤝 Helper", style=discord.ButtonStyle.success, custom_id="apply_helper"))
@@ -509,6 +565,39 @@ async def apply(interaction: discord.Interaction):
     embed.set_footer(text="The Alley Management 🕯️")
 
     await interaction.response.send_message(embed=embed, view=ApplicationView())
+
+# ==============================
+# ⚖️ MODERATION TICKET SYSTEM
+# Handles staff moderation actions (warnings, bans, promotions)
+# ==============================
+class ModerationView(View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        self.add_item(Button(label="⚠️ Warning", style=discord.ButtonStyle.secondary, custom_id="mod_warning"))
+        self.add_item(Button(label="⏱️ Temp Ban", style=discord.ButtonStyle.primary, custom_id="mod_tempban"))
+        self.add_item(Button(label="🔨 Perma Ban", style=discord.ButtonStyle.danger, custom_id="mod_permaban"))
+        self.add_item(Button(label="⬆️ Promoted", style=discord.ButtonStyle.success, custom_id="mod_promoted"))
+        self.add_item(Button(label="⬇️ Demoted", style=discord.ButtonStyle.secondary, custom_id="mod_demoted"))
+
+@bot.tree.command(name="moderation", description="Show The Alley Moderation Panel")
+@app_commands.checks.has_permissions(manage_messages=True)
+async def moderation(interaction: discord.Interaction):
+    embed = discord.Embed(
+        title="⚖️ THE ALLEY MODERATION PANEL",
+        description="Staff moderation action logging system 🕯️\n\n"
+                    "» **Warning** – Issue a warning to a member\n"
+                    "» **Temp Ban** – Temporarily ban a member\n"
+                    "» **Perma Ban** – Permanently ban a member\n"
+                    "» **Promoted** – Log a staff promotion\n"
+                    "» **Demoted** – Log a staff demotion\n\n"
+                    "*Select an action below to create a moderation ticket.*\n"
+                    "*The Alley Management* 🕯️",
+        color=0xe74c3c
+    )
+    embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/1409513135966257222/1411000212964638780/8acff8e587df623ec95f8313f9a88ae9.gif")
+    embed.set_footer(text="Staff Only | The Alley Management 🕯️")
+
+    await interaction.response.send_message(embed=embed, view=ModerationView())
 
 # ==============================
 # 📦 CRATES COMMAND (Improved)
