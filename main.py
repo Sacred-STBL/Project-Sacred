@@ -181,6 +181,7 @@ async def smp_setup(interaction: discord.Interaction):
 # ==============================
 STAFF_ROLE_ID = 1412474000965111888  # 👈 replace with your Staff role ID
 TICKET_CATEGORY_ID = 987654321098765432  # 👈 replace with your Tickets category ID
+MODERATION_CATEGORY_ID = 1428793663529423051  # 👈 Moderation tickets category
 
 # ==============================
 # 📦 CRATES SYSTEM DATA
@@ -457,7 +458,14 @@ async def on_interaction(interaction: discord.Interaction):
                 )
                 return
 
-            for channel in category.channels:
+            mod_category = discord.utils.get(guild.categories, id=MODERATION_CATEGORY_ID)
+            if mod_category is None:
+                await interaction.response.send_message(
+                    "❌ Moderation category not found! Please check the category ID.", ephemeral=True
+                )
+                return
+
+            for channel in mod_category.channels:
                 if channel.name.startswith("mod_") and channel.name.endswith(str(interaction.user.id)):
                     await interaction.response.send_message(
                         "❗ You already have an open moderation ticket!", ephemeral=True
@@ -466,7 +474,7 @@ async def on_interaction(interaction: discord.Interaction):
 
             mod_channel = await guild.create_text_channel(
                 name=f"{cid}-{interaction.user.id}",
-                category=category,
+                category=mod_category,
                 overwrites={
                     guild.default_role: discord.PermissionOverwrite(view_channel=False),
                     interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True),
@@ -542,11 +550,11 @@ class ApplicationView(View):
     def __init__(self):
         super().__init__(timeout=None)
 
-
         self.add_item(Button(label="🏗️ Builder", style=discord.ButtonStyle.success, custom_id="apply_builder"))
         self.add_item(Button(label="💻 Dev", style=discord.ButtonStyle.secondary, custom_id="apply_dev"))
         self.add_item(Button(label="🤝 Helper", style=discord.ButtonStyle.success, custom_id="apply_helper"))
         self.add_item(Button(label="🎥 Streamer", style=discord.ButtonStyle.secondary, custom_id="apply_streamer"))
+        self.add_item(Button(label="📸 Media Team", style=discord.ButtonStyle.primary, custom_id="apply_media"))
 
 # Application command - displays staff position options
 @bot.tree.command(name="apply", description="Show The Alley Application Panel")
@@ -557,7 +565,8 @@ async def apply(interaction: discord.Interaction):
                     "» **Builder** – Create maps & designs\n"
                     "» **Dev** – Assist with coding & bots\n"
                     "» **Helper** – Support the community\n"
-                    "» **Streamer** – Promote The Alley live\n\n"
+                    "» **Streamer** – Promote The Alley live\n"
+                    "» **Media Team** – Create content & graphics\n\n"
                     "*The Alley Management* 🕯️",
         color=0x2ecc71
     )
