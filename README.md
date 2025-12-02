@@ -1,41 +1,51 @@
 # Project-Sacred
 
-# Discord Ticket Bot
+# 🕹️ Discord Ticket & Community Bot
 
-A Discord bot that provides a **Ticket System** for support, inquiries, or moderation requests.
+A **Python Discord Bot** for managing **support tickets, shop systems, applications, crates, and server moderation** for your Minecraft community server.  
+
+Fully customizable and easy to set up for your server’s roles, channels, and ticket system.
+
 
 ---
 
 ## Features
 
-- 🎫 Create support tickets via commands or buttons  
-- 🛠️ Assign staff roles to tickets automatically  
-- 🔒 Ticket privacy (visible only to the user + staff)  
-- ✅ Close tickets with confirmation  
-- 📄 Optional logs for record-keeping  
-- ⚙️ Fully customizable ticket category and channel for creation  
-- ✏️ **Customizable ticket content** – modify the messages, embeds, and fields that appear in tickets  
+### 🎫 Ticket System
+- Create support, shop, application, or moderation tickets via **buttons**  
+- Staff can **claim** and **close** tickets  
+- **Customizable ticket content** messages and categories  
+
+### 🛒 Shop & Crates
+- Users can browse **crates** with previews  
+- Purchase items, ranks, upgrades, or claim event rewards  
+- Fully configurable pricing and crate content  
+
+### 📜 Applications
+- Staff position applications with predefined roles (Builder, Dev, Helper, Streamer, Media)  
+- Tickets created for each application  
+
+### ⚖️ Moderation
+- Staff-only moderation tickets: warnings, temp/permanent bans, promotions, demotions  
+- Logs moderation actions in a dedicated category  
+
+### 🎮 Server Setup
+- Commands to **automatically create roles and channels** for:
+  - Gaming servers
+  - Minecraft SMP servers  
+- Predefined roles, categories, and channels for quick setup  
+
+### 🚀 Boost Notifications
+- Automatically announces server boosts in a designated channel  
+
+### 🔧 Keep Alive
+- Built-in Flask server to keep the bot alive when hosted on platforms like **Replit** or **Render**  
 
 ---
 
 ## Setup
 
-### 1. Clone or import the repository
-- Import into Replit or clone locally
-
-### 2. Configure your bot
-- Open the main bot code (e.g., `index.js` or similar)  
-- Edit the configuration section directly in the code:
-
-```javascript
-const DISCORD_TOKEN = "your-bot-token";        // Your bot token
-const GUILD_ID = "your-server-id";            // Your server ID
-const STAFF_ROLE_ID = "role-id-for-staff";    // Role that can manage tickets
-const CATEGORY_ID = "category-for-tickets";   // Tickets will be created under this category
-
-// Example: Customize the ticket messages
-const TICKET_MESSAGES = {
-  welcome: "Hello! A staff member will be with you shortly.",
-  instructions: "Please describe your issue in detail.",
-  closed: "Your ticket has been closed. Thank you!"
-};
+### 1. Clone or import repository
+```bash
+git clone https://github.com/yourusername/the-alley-bot.git
+cd the-alley-bot
