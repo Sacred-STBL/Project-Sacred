@@ -72,7 +72,7 @@ You can also customize ticket messages, crate content, shop buttons, and applica
 
 Note: .env is optional if your hosting provider supports secret environment variables (Replit, Render, etc.).
 
-4. Run the bot
+### 4. Run the bot
 python main.py
 
 
@@ -89,13 +89,13 @@ Command	Description
 /smp-setup	Automatically set up a Minecraft SMP server (Admin only)
 ```
 Deployment
-🔹 Hosting on Replit
+### 🔹 Hosting on Replit
 
 Add DISCORD_TOKEN in the Secrets/Environment variables section
 
 Click Run to start the bot
 
-🔹 Hosting on Render
+###🔹 Hosting on Render
 
 Create a Web Service with python main.py as the start command
 
@@ -103,7 +103,7 @@ The bot listens on port 8080 (Flask handles keep-alive)
 
 Add DISCORD_TOKEN and any other secrets in the Environment section
 
-🔹 Optional Keep Alive with GitHub Actions
+### 🔹 Optional Keep Alive with GitHub Actions
 ```
 # .github/workflows/keep_alive.yml
 name: Keep Bot Alive
@@ -122,7 +122,7 @@ jobs:
 
 Replace the URL with your public bot URL. No hardcoding in the repo is needed.
 ```
-Customization
+### Customization
 
 Ticket Messages: Edit SupportView, TicketManageView, and interaction handlers
 
@@ -132,7 +132,7 @@ Applications: Add/remove roles in ApplicationView and /apply command
 
 Moderation: Add/remove actions in ModerationView
 
-Contributing
+### Contributing
 
 Pull requests and suggestions are welcome!
 
