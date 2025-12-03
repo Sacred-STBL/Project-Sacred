@@ -182,6 +182,8 @@ async def smp_setup(interaction: discord.Interaction):
 STAFF_ROLE_ID = 1412474000965111888  # 👈 replace with your Staff role ID
 TICKET_CATEGORY_ID = 987654321098765432  # 👈 replace with your Tickets category ID
 MODERATION_CATEGORY_ID = 1428793663529423051  # 👈 Moderation tickets category
+INQUIRY_ROLE_1 = 1431996923493224480  # 👈 Additional role for inquiry tickets
+INQUIRY_ROLE_2 = 1412007276805619794  # 👈 Additional role for inquiry tickets
 
 # ==============================
 # 📦 CRATES SYSTEM DATA
@@ -292,15 +294,27 @@ async def on_interaction(interaction: discord.Interaction):
                     )
                     return
 
+            # Set up base overwrites
+            overwrites = {
+                guild.default_role: discord.PermissionOverwrite(view_channel=False),
+                interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True),
+                guild.get_role(STAFF_ROLE_ID): discord.PermissionOverwrite(view_channel=True, send_messages=True)
+            }
+
+            # Add extra roles for inquiry tickets
+            if cid == "ticket_inquiries":
+                inquiry_role_1 = guild.get_role(INQUIRY_ROLE_1)
+                inquiry_role_2 = guild.get_role(INQUIRY_ROLE_2)
+                if inquiry_role_1:
+                    overwrites[inquiry_role_1] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
+                if inquiry_role_2:
+                    overwrites[inquiry_role_2] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
+
             # Create ticket channel
             ticket_channel = await guild.create_text_channel(
                 name=f"{cid}-{interaction.user.id}",
                 category=category,
-                overwrites={
-                    guild.default_role: discord.PermissionOverwrite(view_channel=False),
-                    interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True),
-                    guild.get_role(STAFF_ROLE_ID): discord.PermissionOverwrite(view_channel=True, send_messages=True)
-                }
+                overwrites=overwrites
             )
 
             await ticket_channel.send(
