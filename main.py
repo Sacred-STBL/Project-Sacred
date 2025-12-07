@@ -182,6 +182,8 @@ async def smp_setup(interaction: discord.Interaction):
 STAFF_ROLE_ID = 1412474000965111888  # 👈 replace with your Staff role ID
 TICKET_CATEGORY_ID = 987654321098765432  # 👈 replace with your Tickets category ID
 MODERATION_CATEGORY_ID = 1428793663529423051  # 👈 Moderation tickets category
+MOD_USER_1 = 716681929163800647  # 👈 User with access to moderation tickets
+MOD_USER_2 = 1383667275672064001  # 👈 User with access to moderation tickets
 INQUIRY_ROLE_1 = 1431996923493224480  # 👈 Additional role for inquiry tickets
 INQUIRY_ROLE_2 = 1412007276805619794  # 👈 Additional role for inquiry tickets
 HELPER_ROLE_ID = 1412007276805619794  # 👈 Helper role for application tickets
@@ -491,14 +493,24 @@ async def on_interaction(interaction: discord.Interaction):
 
             import time
             timestamp = int(time.time())
+            
+            mod_overwrites = {
+                guild.default_role: discord.PermissionOverwrite(view_channel=False),
+                interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True),
+                guild.get_role(STAFF_ROLE_ID): discord.PermissionOverwrite(view_channel=True, send_messages=True)
+            }
+            
+            mod_user_1 = guild.get_member(MOD_USER_1)
+            mod_user_2 = guild.get_member(MOD_USER_2)
+            if mod_user_1:
+                mod_overwrites[mod_user_1] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
+            if mod_user_2:
+                mod_overwrites[mod_user_2] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
+            
             mod_channel = await guild.create_text_channel(
                 name=f"{cid}-{timestamp}",
                 category=mod_category,
-                overwrites={
-                    guild.default_role: discord.PermissionOverwrite(view_channel=False),
-                    interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True),
-                    guild.get_role(STAFF_ROLE_ID): discord.PermissionOverwrite(view_channel=True, send_messages=True)
-                }
+                overwrites=mod_overwrites
             )
 
             action_names = {
