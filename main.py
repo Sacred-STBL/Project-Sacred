@@ -184,6 +184,7 @@ TICKET_CATEGORY_ID = 987654321098765432  # 👈 replace with your Tickets catego
 MODERATION_CATEGORY_ID = 1428793663529423051  # 👈 Moderation tickets category
 INQUIRY_ROLE_1 = 1431996923493224480  # 👈 Additional role for inquiry tickets
 INQUIRY_ROLE_2 = 1412007276805619794  # 👈 Additional role for inquiry tickets
+HELPER_ROLE_ID = 1412007276805619794  # 👈 Helper role for application tickets
 
 # ==============================
 # 📦 CRATES SYSTEM DATA
@@ -372,15 +373,24 @@ async def on_interaction(interaction: discord.Interaction):
                     )
                     return
 
+            # Set up overwrites for application tickets
+            app_overwrites = {
+                guild.default_role: discord.PermissionOverwrite(view_channel=False),
+                interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True),
+                guild.get_role(STAFF_ROLE_ID): discord.PermissionOverwrite(view_channel=True, send_messages=True)
+            }
+
+            # Add helper role if configured
+            if HELPER_ROLE_ID:
+                helper_role = guild.get_role(HELPER_ROLE_ID)
+                if helper_role:
+                    app_overwrites[helper_role] = discord.PermissionOverwrite(view_channel=True, send_messages=True)
+
             # Create application ticket channel
             app_channel = await guild.create_text_channel(
                 name=f"{cid}-{interaction.user.id}",
                 category=category,
-                overwrites={
-                    guild.default_role: discord.PermissionOverwrite(view_channel=False),
-                    interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True),
-                    guild.get_role(STAFF_ROLE_ID): discord.PermissionOverwrite(view_channel=True, send_messages=True)
-                }
+                overwrites=app_overwrites
             )
 
             position = cid.replace('apply_', '').capitalize()
@@ -479,15 +489,10 @@ async def on_interaction(interaction: discord.Interaction):
                 )
                 return
 
-            for channel in mod_category.channels:
-                if channel.name.startswith("mod_") and channel.name.endswith(str(interaction.user.id)):
-                    await interaction.response.send_message(
-                        "❗ You already have an open moderation ticket!", ephemeral=True
-                    )
-                    return
-
+            import time
+            timestamp = int(time.time())
             mod_channel = await guild.create_text_channel(
-                name=f"{cid}-{interaction.user.id}",
+                name=f"{cid}-{timestamp}",
                 category=mod_category,
                 overwrites={
                     guild.default_role: discord.PermissionOverwrite(view_channel=False),
